@@ -1,22 +1,31 @@
 ﻿using System;
 using MySql.Data.MySqlClient;
-using Microsoft.Extensions.Configuration;
 
 namespace GestionBibliotheque.Models
 {
     public class ConnexionDB
     {
-        private static string chaineConnexion =
-            "Server=127.0.0.1;Port=3307;Database=bibliotheque;Uid=root;Pwd=;";
+        private static string ObtenirChaineConnexion()
+        {
+            string host = Environment.GetEnvironmentVariable("MYSQLHOST");
+            string port = Environment.GetEnvironmentVariable("MYSQLPORT");
+            string database = Environment.GetEnvironmentVariable("MYSQLDATABASE");
+            string user = Environment.GetEnvironmentVariable("MYSQLUSER");
+            string password = Environment.GetEnvironmentVariable("MYSQLPASSWORD");
 
-        // ============================================
-        // OBTENIR UNE CONNEXION
-        // ============================================
+            if (!string.IsNullOrEmpty(host))
+            {
+                return $"Server={host};Port={port};Database={database};Uid={user};Pwd={password};AllowPublicKeyRetrieval=true;SslMode=None;";
+            }
+
+            return "Server=127.0.0.1;Port=3307;Database=bibliotheque;Uid=root;Pwd=;";
+        }
+
         public static MySqlConnection ObtenirConnexion()
         {
             try
             {
-                MySqlConnection connexion = new MySqlConnection(chaineConnexion);
+                MySqlConnection connexion = new MySqlConnection(ObtenirChaineConnexion());
                 connexion.Open();
                 return connexion;
             }
@@ -26,9 +35,6 @@ namespace GestionBibliotheque.Models
             }
         }
 
-        // ============================================
-        // TESTER LA CONNEXION
-        // ============================================
         public static bool TesterConnexion()
         {
             try
