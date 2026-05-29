@@ -19,7 +19,7 @@ namespace GestionBibliotheque.Models
                     string userInfo = uri.UserInfo;
                     string user = userInfo.Split(':')[0];
                     string password = userInfo.Split(':').Length > 1 ? userInfo.Split(':')[1] : "";
-                    return $"Server={host};Port={port};Database={database};Uid={user};Pwd={password};SslMode=None;AllowPublicKeyRetrieval=true;";
+                    return $"Server={host};Port={port};Database={database};Uid={user};Pwd={password};SslMode=Preferred;AllowPublicKeyRetrieval=true;";
                 }
                 catch { }
             }
@@ -28,7 +28,7 @@ namespace GestionBibliotheque.Models
             string db = Environment.GetEnvironmentVariable("MYSQLDATABASE") ?? "bibliotheque";
             string u = Environment.GetEnvironmentVariable("MYSQLUSER") ?? "root";
             string pwd = Environment.GetEnvironmentVariable("MYSQLPASSWORD") ?? "";
-            return $"Server={h};Port={p};Database={db};Uid={u};Pwd={pwd};SslMode=None;AllowPublicKeyRetrieval=true;";
+            return $"Server={h};Port={p};Database={db};Uid={u};Pwd={pwd};SslMode=Preferred;AllowPublicKeyRetrieval=true;";
         }
 
         public static MySqlConnection ObtenirConnexion()
