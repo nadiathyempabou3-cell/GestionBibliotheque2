@@ -7,18 +7,28 @@ namespace GestionBibliotheque.Models
     {
         private static string ObtenirChaineConnexion()
         {
-            string host = Environment.GetEnvironmentVariable("MYSQLHOST");
-            string port = Environment.GetEnvironmentVariable("MYSQLPORT");
-            string database = Environment.GetEnvironmentVariable("MYSQLDATABASE");
-            string user = Environment.GetEnvironmentVariable("MYSQLUSER");
-            string password = Environment.GetEnvironmentVariable("MYSQLPASSWORD");
-
-            if (!string.IsNullOrEmpty(host))
+            string mysqlUrl = Environment.GetEnvironmentVariable("MYSQL_URL");
+            if (!string.IsNullOrEmpty(mysqlUrl))
             {
-                return $"Server={host};Port={port};Database={database};Uid={user};Pwd={password};AllowPublicKeyRetrieval=true;SslMode=None;";
+                try
+                {
+                    Uri uri = new Uri(mysqlUrl);
+                    string host = uri.Host;
+                    int port = uri.Port > 0 ? uri.Port : 3306;
+                    string database = uri.AbsolutePath.TrimStart('/');
+                    string userInfo = uri.UserInfo;
+                    string user = userInfo.Split(':')[0];
+                    string password = userInfo.Split(':').Length > 1 ? userInfo.Split(':')[1] : "";
+                    return $"Server={host};Port={port};Database={database};Uid={user};Pwd={password};SslMode=None;AllowPublicKeyRetrieval=true;";
+                }
+                catch { }
             }
-
-            return "Server=127.0.0.1;Port=3307;Database=bibliotheque;Uid=root;Pwd=;";
+            string h = Environment.GetEnvironmentVariable("MYSQLHOST") ?? "127.0.0.1";
+            string p = Environment.GetEnvironmentVariable("MYSQLPORT") ?? "3307";
+            string db = Environment.GetEnvironmentVariable("MYSQLDATABASE") ?? "bibliotheque";
+            string u = Environment.GetEnvironmentVariable("MYSQLUSER") ?? "root";
+            string pwd = Environment.GetEnvironmentVariable("MYSQLPASSWORD") ?? "";
+            return $"Server={h};Port={p};Database={db};Uid={u};Pwd={pwd};SslMode=None;AllowPublicKeyRetrieval=true;";
         }
 
         public static MySqlConnection ObtenirConnexion()
@@ -51,3 +61,4 @@ namespace GestionBibliotheque.Models
         }
     }
 }
+                 
