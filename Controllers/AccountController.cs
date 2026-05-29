@@ -7,17 +7,11 @@ namespace GestionBibliotheque.Controllers
 {
     public class AccountController : Controller
     {
-        // ============================================
-        // AFFICHER LA PAGE DE LOGIN
-        // ============================================
         public IActionResult Login()
         {
             return View();
         }
 
-        // ============================================
-        // TRAITER LE LOGIN
-        // ============================================
         [HttpPost]
         public IActionResult Login(LoginViewModel model)
         {
@@ -28,6 +22,7 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
+                    connexion.Open();
                     string query = "SELECT id_utilisateur, nom, prenom, role FROM UTILISATEUR " +
                                    "WHERE email = @email AND mot_de_passe = @mdp AND statut_compte = 'actif'";
 
@@ -46,11 +41,7 @@ namespace GestionBibliotheque.Controllers
 
                         string role = reader.GetString("role");
                         reader.Close();
-
-                        if (role == "admin" || role == "personnel")
-                            return RedirectToAction("Index", "Dashboard");
-                        else
-                            return RedirectToAction("Index", "Dashboard");
+                        return RedirectToAction("Index", "Dashboard");
                     }
                     else
                     {
@@ -67,17 +58,11 @@ namespace GestionBibliotheque.Controllers
             }
         }
 
-        // ============================================
-        // AFFICHER PAGE INSCRIPTION
-        // ============================================
         public IActionResult Inscription()
         {
             return View();
         }
 
-        // ============================================
-        // TRAITER INSCRIPTION
-        // ============================================
         [HttpPost]
         public IActionResult Inscription(string nom, string prenom, string email,
                                           string mot_de_passe, string telephone, string adresse)
@@ -86,7 +71,7 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
-                    // Verifier si email existe deja
+                    connexion.Open();
                     var cmdCheck = new MySqlCommand(
                         "SELECT COUNT(*) FROM UTILISATEUR WHERE email = @email", connexion);
                     cmdCheck.Parameters.AddWithValue("@email", email);
@@ -98,7 +83,6 @@ namespace GestionBibliotheque.Controllers
                         return View();
                     }
 
-                    // Creer l'utilisateur
                     string queryUser = @"INSERT INTO UTILISATEUR 
                                         (nom, prenom, email, mot_de_passe, telephone, role, statut_compte)
                                         VALUES (@nom, @prenom, @email, @mdp, @tel, 'membre', 'actif')";
@@ -113,7 +97,6 @@ namespace GestionBibliotheque.Controllers
 
                     long newId = cmdUser.LastInsertedId;
 
-                    // Creer le membre
                     string queryMembre = @"INSERT INTO MEMBRE 
                                           (adresse, date_inscription, id_utilisateur)
                                           VALUES (@adresse, CURDATE(), @idUser)";
@@ -134,9 +117,6 @@ namespace GestionBibliotheque.Controllers
             }
         }
 
-        // ============================================
-        // LOGOUT
-        // ============================================
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
