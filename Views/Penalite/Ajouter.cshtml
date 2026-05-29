@@ -1,0 +1,92 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter Penalite</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; display: flex; min-height: 100vh; }
+        .sidebar { width: 250px; background: linear-gradient(180deg, #0d2b4e, #1a4a7a); color: white; padding: 20px 0; position: fixed; height: 100vh; }
+        .sidebar-header { text-align: center; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        .sidebar-header h2 { font-size: 20px; color: #a8c8e8; }
+        .sidebar-menu a { display: block; padding: 12px 25px; color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; border-left: 3px solid transparent; }
+        .sidebar-menu a:hover { background: rgba(255,255,255,0.1); color: white; border-left-color: #a8c8e8; }
+        .sidebar-menu .menu-titre { padding: 10px 25px; font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; }
+        .main-content { margin-left: 250px; flex: 1; padding: 30px; }
+        .form-card { background: white; border-radius: 10px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); max-width: 600px; }
+        .form-card h2 { color: #0d2b4e; margin-bottom: 25px; font-size: 20px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; color: #0d2b4e; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 14px; border: 2px solid #c8d8e8; border-radius: 8px; font-size: 14px; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: #2e6da4; }
+        .btn { padding: 11px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; }
+        .btn-primary { background: #2e6da4; color: white; }
+        .btn-secondary { background: #95a5a6; color: white; }
+        .btn:hover { opacity: 0.85; }
+        .form-actions { display: flex; gap: 10px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header"><h2>Bibliotheque</h2></div>
+        <div class="sidebar-menu">
+            <div class="menu-titre">Navigation</div>
+            <a href="/Dashboard/Index">Tableau de bord</a>
+            <div class="menu-titre">Catalogue</div>
+            <a href="/Livre/Index">Livres</a>
+            <a href="/Categorie/Index">Categories</a>
+            <div class="menu-titre">Gestion</div>
+            <a href="/Emprunt/Index">Emprunts</a>
+            <a href="/Reservation/Index">Reservations</a>
+            <a href="/Membre/Index">Membres</a>
+            <a href="/Abonnement/Index">Abonnements</a>
+            <a href="/Penalite/Index" class="active">Penalites</a>
+            <div class="menu-titre">Compte</div>
+            <a href="/Account/Logout">Se deconnecter</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="form-card">
+            <h2>Ajouter une Penalite</h2>
+
+            @if (ViewBag.Erreur != null)
+            {
+                <div style="background:#ffe0e0;color:#c0392b;padding:10px;border-radius:8px;margin-bottom:15px;">
+                    @ViewBag.Erreur
+                </div>
+            }
+
+            <form action="/Penalite/Ajouter" method="post">
+                <div class="form-group">
+                    <label>Emprunt concerne</label>
+                    <select name="id_emprunt" required>
+                        <option value="">-- Choisir un emprunt --</option>
+                        @foreach (var emp in ViewBag.Emprunts as List<GestionBibliotheque.Models.Emprunt>)
+                        {
+                            <option value="@emp.Id_emprunt">
+                                @emp.Membre.Utilisateur.Prenom @emp.Membre.Utilisateur.Nom - @emp.Livre.Titre
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Montant (FCFA)</label>
+                    <input type="number" name="montant" min="0" step="0.01" placeholder="Ex: 500" required />
+                </div>
+                <div class="form-group">
+                    <label>Motif</label>
+                    <input type="text" name="motif" placeholder="Ex: Retard de retour" required />
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <a href="/Penalite/Index" class="btn btn-secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

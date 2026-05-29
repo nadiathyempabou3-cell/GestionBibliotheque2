@@ -1,0 +1,252 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Bibliotheque</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(180deg, #0d2b4e, #1a4a7a);
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 20px;
+            color: #a8c8e8;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 5px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: #a8c8e8;
+        }
+
+        .sidebar-menu .menu-titre {
+            padding: 10px 25px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        /* CONTENU PRINCIPAL */
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 30px;
+        }
+
+        /* HEADER */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .top-header h1 {
+            color: #0d2b4e;
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info span {
+            color: #0d2b4e;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            padding: 8px 18px;
+            background: #c0392b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .btn-logout:hover { opacity: 0.85; }
+
+        /* CARTES STATISTIQUES */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-top: 4px solid;
+        }
+
+        .stat-card:nth-child(1) { border-top-color: #2e6da4; }
+        .stat-card:nth-child(2) { border-top-color: #27ae60; }
+        .stat-card:nth-child(3) { border-top-color: #e67e22; }
+        .stat-card:nth-child(4) { border-top-color: #8e44ad; }
+
+        .stat-card .nombre {
+            font-size: 42px;
+            font-weight: 700;
+            color: #0d2b4e;
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        /* SECTION BIENVENUE */
+        .welcome-card {
+            background: linear-gradient(135deg, #0d2b4e, #2e6da4);
+            color: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .welcome-card h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-card p {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Bibliotheque</h2>
+            <p>Systeme de gestion</p>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-titre">Navigation</div>
+            <a href="/Dashboard/Index" class="active">Tableau de bord</a>
+
+            <div class="menu-titre">Catalogue</div>
+            <a href="/Livre/Index">Livres</a>
+            <a href="/Categorie/Index">Categories</a>
+
+            <div class="menu-titre">Gestion</div>
+            <a href="/Emprunt/Index">Emprunts</a>
+            <a href="/Reservation/Index">Reservations</a>
+            <a href="/Membre/Index">Membres</a>
+            <a href="/Abonnement/Index">Abonnements</a>
+            <a href="/Penalite/Index">Penalites</a>
+
+            <div class="menu-titre">Compte</div>
+            <a href="/Account/Logout">Se deconnecter</a>
+        </div>
+    </div>
+
+    <!-- CONTENU PRINCIPAL -->
+    <div class="main-content">
+
+        <!-- HEADER -->
+        <div class="top-header">
+            <h1>Tableau de bord</h1>
+            <div class="user-info">
+                <span>@ViewBag.Prenom @ViewBag.Nom</span>
+                <a href="/Account/Logout" class="btn-logout">Deconnexion</a>
+            </div>
+        </div>
+
+        <!-- BIENVENUE -->
+        <div class="welcome-card">
+            <h2>Bienvenue, @ViewBag.Prenom !</h2>
+            <p>Vous etes connecte au systeme de gestion de la bibliotheque.</p>
+            <span class="role-badge">@ViewBag.Role</span>
+        </div>
+
+        <!-- STATISTIQUES -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="nombre">@ViewBag.TotalLivres</div>
+                <div class="label">Total Livres</div>
+            </div>
+            <div class="stat-card">
+                <div class="nombre">@ViewBag.TotalMembres</div>
+                <div class="label">Total Membres</div>
+            </div>
+            <div class="stat-card">
+                <div class="nombre">@ViewBag.EmpruntsEnCours</div>
+                <div class="label">Emprunts en cours</div>
+            </div>
+            <div class="stat-card">
+                <div class="nombre">@ViewBag.ReservationsEnAttente</div>
+                <div class="label">Reservations en attente</div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

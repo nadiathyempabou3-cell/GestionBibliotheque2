@@ -1,0 +1,44 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Erreur</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0d2b4e, #1a4a7a);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+        .error-box { padding: 50px; }
+        .error-box h1 { font-size: 80px; color: #a8c8e8; }
+        .error-box h2 { font-size: 24px; margin: 20px 0; }
+        .error-box p { opacity: 0.7; margin-bottom: 30px; }
+        .btn {
+            padding: 12px 30px;
+            background: white;
+            color: #0d2b4e;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="error-box">
+        <h1>Oops !</h1>
+        <h2>Une erreur s'est produite</h2>
+        <p>La page demandee est introuvable ou une erreur s'est produite.</p>
+        <a href="/Dashboard/Index" class="btn">Retour au tableau de bord</a>
+    </div>
+</body>
+</html>
