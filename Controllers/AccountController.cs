@@ -23,7 +23,7 @@ namespace GestionBibliotheque.Controllers
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
                     connexion.Open();
-                    string query = "SELECT id_utilisateur, nom, prenom, role FROM UTILISATEUR " +
+                    string query = "SELECT id_utilisateur, nom, prenom, role FROM utilisateur " +
                                    "WHERE email = @email AND mot_de_passe = @mdp AND statut_compte = 'actif'";
 
                     MySqlCommand cmd = new MySqlCommand(query, connexion);
@@ -73,7 +73,7 @@ namespace GestionBibliotheque.Controllers
                 {
                     connexion.Open();
                     var cmdCheck = new MySqlCommand(
-                        "SELECT COUNT(*) FROM UTILISATEUR WHERE email = @email", connexion);
+                        "SELECT COUNT(*) FROM utilisateur WHERE email = @email", connexion);
                     cmdCheck.Parameters.AddWithValue("@email", email);
                     int count = Convert.ToInt32(cmdCheck.ExecuteScalar());
 
@@ -83,7 +83,7 @@ namespace GestionBibliotheque.Controllers
                         return View();
                     }
 
-                    string queryUser = @"INSERT INTO UTILISATEUR 
+                    string queryUser = @"INSERT INTO utilisateur 
                                         (nom, prenom, email, mot_de_passe, telephone, role, statut_compte)
                                         VALUES (@nom, @prenom, @email, @mdp, @tel, 'membre', 'actif')";
 
