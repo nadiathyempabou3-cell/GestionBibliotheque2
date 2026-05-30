@@ -8,9 +8,6 @@ namespace GestionBibliotheque.Controllers
 {
     public class EmpruntController : Controller
     {
-        // ============================================
-        // LISTE DES EMPRUNTS
-        // ============================================
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("UserRole") == null)
@@ -22,13 +19,12 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
-                    string query = @"SELECT e.*, 
-                                    u.nom, u.prenom,
-                                    l.titre
-                                    FROM EMPRUNT e
-                                    INNER JOIN MEMBRE m ON e.id_membre = m.id_membre
-                                    INNER JOIN UTILISATEUR u ON m.id_utilisateur = u.id_utilisateur
-                                    INNER JOIN LIVRE l ON e.id_livre = l.id_livre
+                    connexion.Open();
+                    string query = @"SELECT e.*, u.nom, u.prenom, l.titre
+                                    FROM emprunt e
+                                    INNER JOIN membre m ON e.id_membre = m.id_membre
+                                    INNER JOIN utilisateur u ON m.id_utilisateur = u.id_utilisateur
+                                    INNER JOIN livre l ON e.id_livre = l.id_livre
                                     ORDER BY e.date_emprunt DESC";
 
                     var cmd = new MySqlCommand(query, connexion);
@@ -69,9 +65,6 @@ namespace GestionBibliotheque.Controllers
             return View(emprunts);
         }
 
-        // ============================================
-        // AFFICHER FORMULAIRE AJOUT
-        // ============================================
         public IActionResult Ajouter()
         {
             if (HttpContext.Session.GetString("UserRole") == null)
@@ -82,9 +75,6 @@ namespace GestionBibliotheque.Controllers
             return View();
         }
 
-        // ============================================
-        // TRAITER AJOUT
-        // ============================================
         [HttpPost]
         public IActionResult Ajouter(int id_membre, int id_livre, DateTime date_retour_prevue)
         {
@@ -92,8 +82,8 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
-                    // Creer l'emprunt
-                    string query = @"INSERT INTO EMPRUNT 
+                    connexion.Open();
+                    string query = @"INSERT INTO emprunt 
                                     (date_emprunt, date_retour_prevue, statut_emprunt, id_membre, id_livre)
                                     VALUES (CURDATE(), @dateRetour, 'en_cours', @idMembre, @idLivre)";
 
@@ -103,9 +93,8 @@ namespace GestionBibliotheque.Controllers
                     cmd.Parameters.AddWithValue("@idLivre", id_livre);
                     cmd.ExecuteNonQuery();
 
-                    // Diminuer la quantite disponible
                     var cmdUpdate = new MySqlCommand(
-                        "UPDATE LIVRE SET quantite_disponible = quantite_disponible - 1 WHERE id_livre = @id",
+                        "UPDATE livre SET quantite_disponible = quantite_disponible - 1 WHERE id_livre = @id",
                         connexion);
                     cmdUpdate.Parameters.AddWithValue("@id", id_livre);
                     cmdUpdate.ExecuteNonQuery();
@@ -123,33 +112,28 @@ namespace GestionBibliotheque.Controllers
             }
         }
 
-        // ============================================
-        // RETOURNER UN LIVRE
-        // ============================================
         public IActionResult Retourner(int id)
         {
             try
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
-                    // Recuperer l'id du livre
+                    connexion.Open();
                     var cmdGet = new MySqlCommand(
-                        "SELECT id_livre FROM EMPRUNT WHERE id_emprunt = @id", connexion);
+                        "SELECT id_livre FROM emprunt WHERE id_emprunt = @id", connexion);
                     cmdGet.Parameters.AddWithValue("@id", id);
                     int idLivre = Convert.ToInt32(cmdGet.ExecuteScalar());
 
-                    // Mettre a jour l'emprunt
                     var cmdEmprunt = new MySqlCommand(
-                        @"UPDATE EMPRUNT SET 
+                        @"UPDATE emprunt SET 
                           date_retour_effective = CURDATE(), 
                           statut_emprunt = 'retourné'
                           WHERE id_emprunt = @id", connexion);
                     cmdEmprunt.Parameters.AddWithValue("@id", id);
                     cmdEmprunt.ExecuteNonQuery();
 
-                    // Augmenter la quantite disponible
                     var cmdLivre = new MySqlCommand(
-                        "UPDATE LIVRE SET quantite_disponible = quantite_disponible + 1 WHERE id_livre = @id",
+                        "UPDATE livre SET quantite_disponible = quantite_disponible + 1 WHERE id_livre = @id",
                         connexion);
                     cmdLivre.Parameters.AddWithValue("@id", idLivre);
                     cmdLivre.ExecuteNonQuery();
@@ -165,17 +149,15 @@ namespace GestionBibliotheque.Controllers
             return RedirectToAction("Index");
         }
 
-        // ============================================
-        // METHODES PRIVEES
-        // ============================================
         private List<Membre> ObtenirMembres()
         {
             List<Membre> membres = new List<Membre>();
             using (var connexion = ConnexionDB.ObtenirConnexion())
             {
+                connexion.Open();
                 string query = @"SELECT m.id_membre, u.nom, u.prenom 
-                                FROM MEMBRE m 
-                                INNER JOIN UTILISATEUR u ON m.id_utilisateur = u.id_utilisateur";
+                                FROM membre m 
+                                INNER JOIN utilisateur u ON m.id_utilisateur = u.id_utilisateur";
                 var cmd = new MySqlCommand(query, connexion);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -199,7 +181,8 @@ namespace GestionBibliotheque.Controllers
             List<Livre> livres = new List<Livre>();
             using (var connexion = ConnexionDB.ObtenirConnexion())
             {
-                string query = "SELECT id_livre, titre FROM LIVRE WHERE quantite_disponible > 0";
+                connexion.Open();
+                string query = "SELECT id_livre, titre FROM livre WHERE quantite_disponible > 0";
                 var cmd = new MySqlCommand(query, connexion);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
