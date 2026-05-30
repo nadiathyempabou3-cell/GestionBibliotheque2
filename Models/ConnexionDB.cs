@@ -7,13 +7,7 @@ namespace GestionBibliotheque.Models
     {
         private static string ObtenirChaineConnexion()
         {
-            string host = Environment.GetEnvironmentVariable("MYSQLHOST") ?? "localhost";
-            string port = Environment.GetEnvironmentVariable("MYSQLPORT") ?? "3306";
-            string database = Environment.GetEnvironmentVariable("MYSQLDATABASE") ?? "bibliotheque";
-            string user = Environment.GetEnvironmentVariable("MYSQLUSER") ?? "root";
-            string password = Environment.GetEnvironmentVariable("MYSQLPASSWORD") ?? "";
-
-            return $"Server={host};Port={port};Database={database};Uid={user};Pwd={password};";
+            return "Server=zephyr.proxy.rlwy.net;Port=50286;Database=railway;Uid=root;Pwd=PtBhOwaHFdRrvabWdvBNtGGChcgkMzFU;SslMode=None;";
         }
 
         public static MySqlConnection ObtenirConnexion()
@@ -22,4 +16,3 @@ namespace GestionBibliotheque.Models
         }
     }
 }
-                 
