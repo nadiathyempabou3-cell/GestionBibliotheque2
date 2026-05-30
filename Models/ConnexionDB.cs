@@ -7,7 +7,7 @@ namespace GestionBibliotheque.Models
     {
         private static string ObtenirChaineConnexion()
         {
-            return "Server=zephyr.proxy.rlwy.net;Port=50286;Database=railway;Uid=root;Pwd=PtBhOwaHFdRrvabWdvBNtGGChcgkMzFU;SslMode=None;";
+            return "Server=zephyr.proxy.rlwy.net;Port=50286;Database=railway;Uid=root;Pwd=PtBhOwaHFdRrvabWdvBNtGGChcgkMzFU;SslMode=Disabled;";
         }
 
         public static MySqlConnection ObtenirConnexion()
