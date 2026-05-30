@@ -8,9 +8,6 @@ namespace GestionBibliotheque.Controllers
 {
     public class AbonnementController : Controller
     {
-        // ============================================
-        // LISTE DES ABONNEMENTS
-        // ============================================
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("UserRole") == null)
@@ -22,10 +19,11 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
+                    connexion.Open();
                     string query = @"SELECT a.*, u.nom, u.prenom
-                                    FROM ABONNEMENT a
-                                    INNER JOIN MEMBRE m ON a.id_membre = m.id_membre
-                                    INNER JOIN UTILISATEUR u ON m.id_utilisateur = u.id_utilisateur
+                                    FROM abonnement a
+                                    INNER JOIN membre m ON a.id_membre = m.id_membre
+                                    INNER JOIN utilisateur u ON m.id_utilisateur = u.id_utilisateur
                                     ORDER BY a.date_debut DESC";
 
                     var cmd = new MySqlCommand(query, connexion);
@@ -62,9 +60,6 @@ namespace GestionBibliotheque.Controllers
             return View(abonnements);
         }
 
-        // ============================================
-        // AFFICHER FORMULAIRE AJOUT
-        // ============================================
         public IActionResult Ajouter()
         {
             if (HttpContext.Session.GetString("UserRole") == null)
@@ -74,9 +69,6 @@ namespace GestionBibliotheque.Controllers
             return View();
         }
 
-        // ============================================
-        // TRAITER AJOUT
-        // ============================================
         [HttpPost]
         public IActionResult Ajouter(int id_membre, string type_abonnement,
                                      DateTime date_debut, decimal montant)
@@ -84,8 +76,6 @@ namespace GestionBibliotheque.Controllers
             try
             {
                 DateTime date_fin;
-
-                // Calculer la date de fin selon le type
                 if (type_abonnement == "mensuel")
                     date_fin = date_debut.AddMonths(1);
                 else if (type_abonnement == "trimestriel")
@@ -95,7 +85,8 @@ namespace GestionBibliotheque.Controllers
 
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
-                    string query = @"INSERT INTO ABONNEMENT 
+                    connexion.Open();
+                    string query = @"INSERT INTO abonnement 
                                     (type_abonnement, date_debut, date_fin, montant, 
                                      statut_paiement, id_membre)
                                     VALUES (@type, @debut, @fin, @montant, 'payé', @idMembre)";
@@ -120,17 +111,15 @@ namespace GestionBibliotheque.Controllers
             }
         }
 
-        // ============================================
-        // METHODE PRIVEE
-        // ============================================
         private List<Membre> ObtenirMembres()
         {
             List<Membre> membres = new List<Membre>();
             using (var connexion = ConnexionDB.ObtenirConnexion())
             {
+                connexion.Open();
                 string query = @"SELECT m.id_membre, u.nom, u.prenom 
-                                FROM MEMBRE m 
-                                INNER JOIN UTILISATEUR u ON m.id_utilisateur = u.id_utilisateur";
+                                FROM membre m 
+                                INNER JOIN utilisateur u ON m.id_utilisateur = u.id_utilisateur";
                 var cmd = new MySqlCommand(query, connexion);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
