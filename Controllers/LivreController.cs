@@ -8,9 +8,6 @@ namespace GestionBibliotheque.Controllers
 {
     public class LivreController : Controller
     {
-        // ============================================
-        // LISTE DES LIVRES
-        // ============================================
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("UserRole") == null)
@@ -22,9 +19,10 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
+                    connexion.Open();
                     string query = @"SELECT l.*, c.nom_categorie 
-                                    FROM LIVRE l 
-                                    INNER JOIN CATEGORIE c ON l.id_categorie = c.id_categorie
+                                    FROM livre l 
+                                    INNER JOIN categorie c ON l.id_categorie = c.id_categorie
                                     ORDER BY l.titre";
 
                     var cmd = new MySqlCommand(query, connexion);
@@ -59,9 +57,6 @@ namespace GestionBibliotheque.Controllers
             return View(livres);
         }
 
-        // ============================================
-        // AFFICHER FORMULAIRE AJOUT
-        // ============================================
         public IActionResult Ajouter()
         {
             if (HttpContext.Session.GetString("UserRole") == null)
@@ -71,9 +66,6 @@ namespace GestionBibliotheque.Controllers
             return View();
         }
 
-        // ============================================
-        // TRAITER AJOUT
-        // ============================================
         [HttpPost]
         public IActionResult Ajouter(Livre livre)
         {
@@ -81,7 +73,8 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
-                    string query = @"INSERT INTO LIVRE 
+                    connexion.Open();
+                    string query = @"INSERT INTO livre 
                                     (titre, auteur, isbn, annee_publication, description, 
                                      quantite_totale, quantite_disponible, etat, id_categorie)
                                     VALUES 
@@ -98,7 +91,6 @@ namespace GestionBibliotheque.Controllers
                     cmd.Parameters.AddWithValue("@qdispo", livre.Quantite_totale);
                     cmd.Parameters.AddWithValue("@etat", "disponible");
                     cmd.Parameters.AddWithValue("@categorie", livre.Id_categorie);
-
                     cmd.ExecuteNonQuery();
                 }
 
@@ -113,9 +105,6 @@ namespace GestionBibliotheque.Controllers
             }
         }
 
-        // ============================================
-        // AFFICHER FORMULAIRE MODIFICATION
-        // ============================================
         public IActionResult Modifier(int id)
         {
             if (HttpContext.Session.GetString("UserRole") == null)
@@ -127,7 +116,8 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
-                    string query = "SELECT * FROM LIVRE WHERE id_livre = @id";
+                    connexion.Open();
+                    string query = "SELECT * FROM livre WHERE id_livre = @id";
                     var cmd = new MySqlCommand(query, connexion);
                     cmd.Parameters.AddWithValue("@id", id);
                     var reader = cmd.ExecuteReader();
@@ -159,9 +149,6 @@ namespace GestionBibliotheque.Controllers
             return View(livre);
         }
 
-        // ============================================
-        // TRAITER MODIFICATION
-        // ============================================
         [HttpPost]
         public IActionResult Modifier(Livre livre)
         {
@@ -169,7 +156,8 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
-                    string query = @"UPDATE LIVRE SET 
+                    connexion.Open();
+                    string query = @"UPDATE livre SET 
                                     titre = @titre, auteur = @auteur, isbn = @isbn,
                                     annee_publication = @annee, description = @description,
                                     quantite_totale = @qtotal, etat = @etat,
@@ -186,7 +174,6 @@ namespace GestionBibliotheque.Controllers
                     cmd.Parameters.AddWithValue("@etat", livre.Etat);
                     cmd.Parameters.AddWithValue("@categorie", livre.Id_categorie);
                     cmd.Parameters.AddWithValue("@id", livre.Id_livre);
-
                     cmd.ExecuteNonQuery();
                 }
 
@@ -201,16 +188,14 @@ namespace GestionBibliotheque.Controllers
             }
         }
 
-        // ============================================
-        // SUPPRIMER UN LIVRE
-        // ============================================
         public IActionResult Supprimer(int id)
         {
             try
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
-                    string query = "DELETE FROM LIVRE WHERE id_livre = @id";
+                    connexion.Open();
+                    string query = "DELETE FROM livre WHERE id_livre = @id";
                     var cmd = new MySqlCommand(query, connexion);
                     cmd.Parameters.AddWithValue("@id", id);
                     cmd.ExecuteNonQuery();
@@ -226,16 +211,14 @@ namespace GestionBibliotheque.Controllers
             return RedirectToAction("Index");
         }
 
-        // ============================================
-        // METHODE PRIVEE : OBTENIR CATEGORIES
-        // ============================================
         private List<Categorie> ObtenirCategories()
         {
             List<Categorie> categories = new List<Categorie>();
 
             using (var connexion = ConnexionDB.ObtenirConnexion())
             {
-                var cmd = new MySqlCommand("SELECT * FROM CATEGORIE ORDER BY nom_categorie", connexion);
+                connexion.Open();
+                var cmd = new MySqlCommand("SELECT * FROM categorie ORDER BY nom_categorie", connexion);
                 var reader = cmd.ExecuteReader();
 
                 while (reader.Read())
