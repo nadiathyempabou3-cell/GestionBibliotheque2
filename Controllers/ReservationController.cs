@@ -8,9 +8,6 @@ namespace GestionBibliotheque.Controllers
 {
     public class ReservationController : Controller
     {
-        // ============================================
-        // LISTE DES RESERVATIONS
-        // ============================================
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("UserRole") == null)
@@ -22,13 +19,12 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
-                    string query = @"SELECT r.*, 
-                                    u.nom, u.prenom,
-                                    l.titre
-                                    FROM RESERVATION r
-                                    INNER JOIN MEMBRE m ON r.id_membre = m.id_membre
-                                    INNER JOIN UTILISATEUR u ON m.id_utilisateur = u.id_utilisateur
-                                    INNER JOIN LIVRE l ON r.id_livre = l.id_livre
+                    connexion.Open();
+                    string query = @"SELECT r.*, u.nom, u.prenom, l.titre
+                                    FROM reservation r
+                                    INNER JOIN membre m ON r.id_membre = m.id_membre
+                                    INNER JOIN utilisateur u ON m.id_utilisateur = u.id_utilisateur
+                                    INNER JOIN livre l ON r.id_livre = l.id_livre
                                     ORDER BY r.date_reservation DESC";
 
                     var cmd = new MySqlCommand(query, connexion);
@@ -64,9 +60,6 @@ namespace GestionBibliotheque.Controllers
             return View(reservations);
         }
 
-        // ============================================
-        // AFFICHER FORMULAIRE AJOUT
-        // ============================================
         public IActionResult Ajouter()
         {
             if (HttpContext.Session.GetString("UserRole") == null)
@@ -77,9 +70,6 @@ namespace GestionBibliotheque.Controllers
             return View();
         }
 
-        // ============================================
-        // TRAITER AJOUT
-        // ============================================
         [HttpPost]
         public IActionResult Ajouter(int id_membre, int id_livre)
         {
@@ -87,7 +77,8 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
-                    string query = @"INSERT INTO RESERVATION 
+                    connexion.Open();
+                    string query = @"INSERT INTO reservation 
                                     (date_reservation, statut_reservation, id_membre, id_livre)
                                     VALUES (NOW(), 'en_attente', @idMembre, @idLivre)";
 
@@ -109,17 +100,15 @@ namespace GestionBibliotheque.Controllers
             }
         }
 
-        // ============================================
-        // CONFIRMER UNE RESERVATION
-        // ============================================
         public IActionResult Confirmer(int id)
         {
             try
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
+                    connexion.Open();
                     var cmd = new MySqlCommand(
-                        "UPDATE RESERVATION SET statut_reservation = 'confirmée' WHERE id_reservation = @id",
+                        "UPDATE reservation SET statut_reservation = 'confirmée' WHERE id_reservation = @id",
                         connexion);
                     cmd.Parameters.AddWithValue("@id", id);
                     cmd.ExecuteNonQuery();
@@ -133,17 +122,15 @@ namespace GestionBibliotheque.Controllers
             return RedirectToAction("Index");
         }
 
-        // ============================================
-        // ANNULER UNE RESERVATION
-        // ============================================
         public IActionResult Annuler(int id)
         {
             try
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
+                    connexion.Open();
                     var cmd = new MySqlCommand(
-                        "UPDATE RESERVATION SET statut_reservation = 'annulée' WHERE id_reservation = @id",
+                        "UPDATE reservation SET statut_reservation = 'annulée' WHERE id_reservation = @id",
                         connexion);
                     cmd.Parameters.AddWithValue("@id", id);
                     cmd.ExecuteNonQuery();
@@ -157,17 +144,15 @@ namespace GestionBibliotheque.Controllers
             return RedirectToAction("Index");
         }
 
-        // ============================================
-        // METHODES PRIVEES
-        // ============================================
         private List<Membre> ObtenirMembres()
         {
             List<Membre> membres = new List<Membre>();
             using (var connexion = ConnexionDB.ObtenirConnexion())
             {
+                connexion.Open();
                 string query = @"SELECT m.id_membre, u.nom, u.prenom 
-                                FROM MEMBRE m 
-                                INNER JOIN UTILISATEUR u ON m.id_utilisateur = u.id_utilisateur";
+                                FROM membre m 
+                                INNER JOIN utilisateur u ON m.id_utilisateur = u.id_utilisateur";
                 var cmd = new MySqlCommand(query, connexion);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -191,7 +176,8 @@ namespace GestionBibliotheque.Controllers
             List<Livre> livres = new List<Livre>();
             using (var connexion = ConnexionDB.ObtenirConnexion())
             {
-                var cmd = new MySqlCommand("SELECT id_livre, titre FROM LIVRE", connexion);
+                connexion.Open();
+                var cmd = new MySqlCommand("SELECT id_livre, titre FROM livre", connexion);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
