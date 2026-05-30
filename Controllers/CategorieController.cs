@@ -8,9 +8,6 @@ namespace GestionBibliotheque.Controllers
 {
     public class CategorieController : Controller
     {
-        // ============================================
-        // LISTE DES CATEGORIES
-        // ============================================
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("UserRole") == null)
@@ -22,8 +19,9 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
+                    connexion.Open();
                     var cmd = new MySqlCommand(
-                        "SELECT * FROM CATEGORIE ORDER BY nom_categorie", connexion);
+                        "SELECT * FROM categorie ORDER BY nom_categorie", connexion);
                     var reader = cmd.ExecuteReader();
 
                     while (reader.Read())
@@ -44,9 +42,6 @@ namespace GestionBibliotheque.Controllers
             return View(categories);
         }
 
-        // ============================================
-        // AJOUTER
-        // ============================================
         [HttpPost]
         public IActionResult Ajouter(string nom_categorie)
         {
@@ -54,8 +49,9 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
+                    connexion.Open();
                     var cmd = new MySqlCommand(
-                        "INSERT INTO CATEGORIE (nom_categorie) VALUES (@nom)", connexion);
+                        "INSERT INTO categorie (nom_categorie) VALUES (@nom)", connexion);
                     cmd.Parameters.AddWithValue("@nom", nom_categorie);
                     cmd.ExecuteNonQuery();
                 }
@@ -68,17 +64,15 @@ namespace GestionBibliotheque.Controllers
             return RedirectToAction("Index");
         }
 
-        // ============================================
-        // SUPPRIMER
-        // ============================================
         public IActionResult Supprimer(int id)
         {
             try
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
+                    connexion.Open();
                     var cmd = new MySqlCommand(
-                        "DELETE FROM CATEGORIE WHERE id_categorie = @id", connexion);
+                        "DELETE FROM categorie WHERE id_categorie = @id", connexion);
                     cmd.Parameters.AddWithValue("@id", id);
                     cmd.ExecuteNonQuery();
                 }
