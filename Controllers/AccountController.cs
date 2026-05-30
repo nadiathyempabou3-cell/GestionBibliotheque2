@@ -97,7 +97,7 @@ namespace GestionBibliotheque.Controllers
 
                     long newId = cmdUser.LastInsertedId;
 
-                    string queryMembre = @"INSERT INTO MEMBRE 
+                    string queryMembre = @"INSERT INTO membre 
                                           (adresse, date_inscription, id_utilisateur)
                                           VALUES (@adresse, CURDATE(), @idUser)";
 
