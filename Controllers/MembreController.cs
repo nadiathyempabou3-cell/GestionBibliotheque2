@@ -8,9 +8,6 @@ namespace GestionBibliotheque.Controllers
 {
     public class MembreController : Controller
     {
-        // ============================================
-        // LISTE DES MEMBRES
-        // ============================================
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("UserRole") == null)
@@ -22,9 +19,10 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
+                    connexion.Open();
                     string query = @"SELECT m.*, u.nom, u.prenom, u.email, u.telephone, u.statut_compte
-                                    FROM MEMBRE m
-                                    INNER JOIN UTILISATEUR u ON m.id_utilisateur = u.id_utilisateur
+                                    FROM membre m
+                                    INNER JOIN utilisateur u ON m.id_utilisateur = u.id_utilisateur
                                     ORDER BY u.nom";
 
                     var cmd = new MySqlCommand(query, connexion);
@@ -58,9 +56,6 @@ namespace GestionBibliotheque.Controllers
             return View(membres);
         }
 
-        // ============================================
-        // AFFICHER FORMULAIRE AJOUT
-        // ============================================
         public IActionResult Ajouter()
         {
             if (HttpContext.Session.GetString("UserRole") == null)
@@ -69,9 +64,6 @@ namespace GestionBibliotheque.Controllers
             return View();
         }
 
-        // ============================================
-        // TRAITER AJOUT
-        // ============================================
         [HttpPost]
         public IActionResult Ajouter(Utilisateur utilisateur, string adresse)
         {
@@ -79,8 +71,8 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
-                    // Creer l'utilisateur
-                    string queryUser = @"INSERT INTO UTILISATEUR 
+                    connexion.Open();
+                    string queryUser = @"INSERT INTO utilisateur 
                                         (nom, prenom, email, mot_de_passe, telephone, role, statut_compte)
                                         VALUES (@nom, @prenom, @email, @mdp, @tel, 'membre', 'actif')";
 
@@ -92,11 +84,9 @@ namespace GestionBibliotheque.Controllers
                     cmdUser.Parameters.AddWithValue("@tel", utilisateur.Telephone ?? "");
                     cmdUser.ExecuteNonQuery();
 
-                    // Recuperer l'id du nouvel utilisateur
                     long newId = cmdUser.LastInsertedId;
 
-                    // Creer le membre
-                    string queryMembre = @"INSERT INTO MEMBRE (adresse, date_inscription, id_utilisateur)
+                    string queryMembre = @"INSERT INTO membre (adresse, date_inscription, id_utilisateur)
                                           VALUES (@adresse, CURDATE(), @idUser)";
 
                     var cmdMembre = new MySqlCommand(queryMembre, connexion);
@@ -115,30 +105,25 @@ namespace GestionBibliotheque.Controllers
             }
         }
 
-        // ============================================
-        // SUPPRIMER UN MEMBRE
-        // ============================================
         public IActionResult Supprimer(int id)
         {
             try
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
-                    // Recuperer id_utilisateur
+                    connexion.Open();
                     var cmdGet = new MySqlCommand(
-                        "SELECT id_utilisateur FROM MEMBRE WHERE id_membre = @id", connexion);
+                        "SELECT id_utilisateur FROM membre WHERE id_membre = @id", connexion);
                     cmdGet.Parameters.AddWithValue("@id", id);
                     int idUser = Convert.ToInt32(cmdGet.ExecuteScalar());
 
-                    // Supprimer le membre
                     var cmdMembre = new MySqlCommand(
-                        "DELETE FROM MEMBRE WHERE id_membre = @id", connexion);
+                        "DELETE FROM membre WHERE id_membre = @id", connexion);
                     cmdMembre.Parameters.AddWithValue("@id", id);
                     cmdMembre.ExecuteNonQuery();
 
-                    // Supprimer l'utilisateur
                     var cmdUser = new MySqlCommand(
-                        "DELETE FROM UTILISATEUR WHERE id_utilisateur = @id", connexion);
+                        "DELETE FROM utilisateur WHERE id_utilisateur = @id", connexion);
                     cmdUser.Parameters.AddWithValue("@id", idUser);
                     cmdUser.ExecuteNonQuery();
                 }
