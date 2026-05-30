@@ -9,7 +9,6 @@ namespace GestionBibliotheque.Controllers
     {
         public IActionResult Index()
         {
-            // Verifier si l'utilisateur est connecte
             if (HttpContext.Session.GetString("UserRole") == null)
                 return RedirectToAction("Login", "Account");
 
@@ -17,24 +16,22 @@ namespace GestionBibliotheque.Controllers
             {
                 using (var connexion = ConnexionDB.ObtenirConnexion())
                 {
-                    // Nombre total de livres
-                    var cmdLivres = new MySql.Data.MySqlClient.MySqlCommand(
-                        "SELECT COUNT(*) FROM LIVRE", connexion);
+                    connexion.Open();
+
+                    var cmdLivres = new MySqlCommand(
+                        "SELECT COUNT(*) FROM livre", connexion);
                     ViewBag.TotalLivres = cmdLivres.ExecuteScalar();
 
-                    // Nombre de membres
-                    var cmdMembres = new MySql.Data.MySqlClient.MySqlCommand(
-                        "SELECT COUNT(*) FROM MEMBRE", connexion);
+                    var cmdMembres = new MySqlCommand(
+                        "SELECT COUNT(*) FROM membre", connexion);
                     ViewBag.TotalMembres = cmdMembres.ExecuteScalar();
 
-                    // Emprunts en cours
-                    var cmdEmprunts = new MySql.Data.MySqlClient.MySqlCommand(
-                        "SELECT COUNT(*) FROM EMPRUNT WHERE statut_emprunt = 'en_cours'", connexion);
+                    var cmdEmprunts = new MySqlCommand(
+                        "SELECT COUNT(*) FROM emprunt WHERE statut_emprunt = 'en_cours'", connexion);
                     ViewBag.EmpruntsEnCours = cmdEmprunts.ExecuteScalar();
 
-                    // Reservations en attente
-                    var cmdReservations = new MySql.Data.MySqlClient.MySqlCommand(
-                        "SELECT COUNT(*) FROM RESERVATION WHERE statut_reservation = 'en_attente'", connexion);
+                    var cmdReservations = new MySqlCommand(
+                        "SELECT COUNT(*) FROM reservation WHERE statut_reservation = 'en_attente'", connexion);
                     ViewBag.ReservationsEnAttente = cmdReservations.ExecuteScalar();
                 }
             }
